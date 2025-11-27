@@ -1,0 +1,78 @@
+# settings:
+#   output_file: "traveloka_final_data.csv"
+
+# data_schema:
+#   # Kita hanya mendefinisikan schema untuk detail_page
+#   # Script nanti yang akan memutuskan apakah sebuah file cocok dengan schema ini
+#   detail_page:
+#     # Kunci Identifikasi: Jika path ini ada, maka ini adalah halaman detail
+#     validation_key: "props.pageProps.hotel"
+    
+#     # Lokasi data untuk diekstrak
+#     target_root: "props.pageProps.hotel" 
+    
+#     items:
+#       # --- Identitas Dasar ---
+#       hotel_id: "id"
+#       nama_akomodasi: "displayName"
+#       tipe_akomodasi: "accomPropertyType" 
+      
+#       # --- Lokasi ---
+#       alamat_lengkap: "globalAddressString"
+#       region: "region"
+#       kota: "city"
+#       negara: "country"
+      
+#       # --- Rating & Review ---
+#       # Kita ambil dari userRating. Jika null, parser akan fallback ke reviewSummary
+#       rating_review: "userRating"
+#       jumlah_review: "numReviews"
+#       info_rating: "userRatingInfo"
+      
+#       # --- Harga & Fasilitas ---
+#       harga_min: "lowRate"
+#       bintang_rating: "starRating"
+#       fasilitas: "showedFacilityTypesString" # List fasilitas
+      
+#       # --- Metadata Tambahan ---
+#       bahasa_html: "HTML_LANG_ATTR"      # Diambil dari tag <html lang="...">
+#       bahasa_app: "RAW_APP_CONTEXT_LANG" # Diambil dari props.pageProps.rawAppContext
+
+settings:
+  output_file: "traveloka_final_data.csv"
+
+data_schema:
+  detail_page:
+    # Kunci Validasi (Untuk memastikan ini halaman detail)
+    validation_key: "props.pageProps.hotel"
+    
+    # Root Data
+    target_root: "props.pageProps.hotel"
+    
+    items:
+      # --- Info Utama ---
+      hotel_id: "id"
+      sumber_url: "canonicalUrl" # URL asli halaman
+      nama_akomodasi: "displayName"
+      tipe_akomodasi: "accomPropertyType"
+      
+      # --- Lokasi ---
+      # Di JSON Traveloka, alamat biasanya sudah bersih di field ini
+      alamat_lengkap: "globalAddressString" 
+      lokasi_singkat: "location"
+      region: "region"
+      
+      # --- Rating ---
+      # Jika null, script akan otomatis cari di reviewSummary
+      rating_review: "userRating" 
+      jumlah_review: "numReviews"
+      
+      # --- Fasilitas & Harga ---
+      fasilitas: "showedFacilityTypesString" # List fasilitas utama
+      harga_min: "lowRate"
+      bintang_rating: "starRating"
+      
+      # --- Detail Kamar (Array Handling) ---
+      # Tanda [*] artinya kita mengambil semua item dalam list tersebut
+      tipe_kamar: "roomTypes[*].name"
+      harga_per_tipe_kamar: "roomTypes[*].rates[*].totalFare"
