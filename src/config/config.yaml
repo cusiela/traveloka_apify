@@ -1,0 +1,82 @@
+settings:
+  output_file: "traveloka_final_dataset.jsonl"
+  format: "jsonl" # Format terbaik untuk dataset training LLM
+
+data_schema:
+  detail_page:
+    # Validasi bahwa kita berada di node JSON yang benar
+    validation_key: "props.pageProps.hotel.id"
+    
+    # Root path di dalam JSON Traveloka
+    target_root: "props.pageProps.hotel"
+    
+    items:
+      # --- Identitas ---
+      hotel_id: 
+        path: "id"
+        type: "int"
+      
+      sumber_url: 
+        path: "canonicalUrl" # URL Canonical untuk referensi
+        type: "string"
+        
+      nama_akomodasi: 
+        path: "displayName"
+        type: "string"
+        
+      tipe_akomodasi: 
+        path: "accomPropertyType"
+        type: "string"
+        
+      # --- Geografis ---
+      alamat_lengkap: 
+        path: "address"
+        type: "string"
+        
+      koordinat:
+        path_lat: "latitude"
+        path_lon: "longitude"
+        type: "geo_object"
+        
+      kota: "city"
+      region: "region"
+      
+      # --- Statistik & Harga ---
+      rating_review: 
+        path: "reviewSummary.ugcReviewSummary.userRating"
+        type: "float"
+        default: 0.0
+        
+      jumlah_review: 
+        path: "reviewSummary.ugcReviewSummary.numReviews"
+        type: "int"
+        default: 0
+        
+      harga_min: 
+        path: "rateDisplay.totalFare" # Atau baseFare
+        type: "int"
+        
+      bintang_rating: 
+        path: "starRating"
+        type: "float"
+
+      # --- Data Kualitatif (Penting untuk RAG) ---
+      fasilitas: 
+        path: "hotelFacilitiesCategoriesDisplay"
+        type: "nested_list_map" # Memetakan Kategori -> Item
+        
+      deskripsi:
+        path: "attribute.description"
+        fallback: "attribute.overview"
+        type: "clean_html_text"
+        
+      kebijakan:
+        path: "hotelPolicy.policies"
+        type: "list_objects"
+        fields: ["policyTitle", "policyDescription"]
+
+      # --- Konteks Sekitar ---
+      lokasi_sekitar:
+        path: "nearestPointOfInterests"
+        type: "list_objects"
+        fields: ["name", "distance", "category"]
